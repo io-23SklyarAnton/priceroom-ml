@@ -28,13 +28,19 @@ async def regular_train_model():
 @router.post("/api/predict-price/")
 def predict_price(realty: RealtyPredictionBody):
     try:
+        print(f"Received input: {realty}")
+
         model_inputs = model_handler.prepare_features(
             district=realty.district,
             rooms_count=realty.rooms_count,
             total_square_meters=realty.total_square_meters,
         )
 
+        print(f"Prepared inputs for prediction: {model_inputs}")
+
         y_pred = model_handler.model.predict(model_inputs)
+
+        print(f"Model prediction: {y_pred}")
 
         if not np.isfinite(y_pred[0]):
             raise ValueError("Model prediction returned a non-finite value (NaN or Infinity).")
@@ -42,4 +48,5 @@ def predict_price(realty: RealtyPredictionBody):
         return RealtyPredictionResponse(price=float(y_pred[0]))
 
     except Exception as e:
+        print(f"Error during prediction: {e}")
         raise HTTPException(status_code=500, detail=str(e))
