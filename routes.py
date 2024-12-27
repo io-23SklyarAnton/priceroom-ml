@@ -1,3 +1,4 @@
+import numpy as np
 from fastapi_utilities import repeat_every
 
 from fastapi import APIRouter, HTTPException
@@ -35,7 +36,10 @@ def predict_price(realty: RealtyPredictionBody):
 
         y_pred = model_handler.model.predict(model_inputs)
 
-        return RealtyPredictionResponse(price=y_pred[0])
+        if not np.isfinite(y_pred[0]):
+            raise ValueError("Model prediction returned a non-finite value (NaN or Infinity).")
+
+        return RealtyPredictionResponse(price=float(y_pred[0]))
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
