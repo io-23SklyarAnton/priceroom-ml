@@ -50,3 +50,14 @@ class RealtyPredictionBody(BaseModel):
                 "floors_count": 1
             }
         }
+
+
+class RealtyPredictionResponse(BaseModel):
+    price: float = Field(..., description="Predicted price in USD")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "price": 10000
+            }
+        }
